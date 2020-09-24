@@ -1,0 +1,27 @@
+$border_width_thick: 0.4vh;
+$border_width_thin: 0.2vh;
+
+$color_gps: #FF00FF;
+$color_ap_active: #00ff00;
+
+$category_box_outline_color:#ddd;
+$category_box_background_color:#000;
+
+$input_color: #00FFFF;
+
+$page_background_color: #202020;
+
+@keyframes SelectionBlink {
+    0% {
+        background: $input_color;
+        color: #000;
+    }
+    50% {
+        background: none;
+        color: $input_color;
+    }
+    100% {
+        background: $input_color;
+        color: #000;
+    }
+}

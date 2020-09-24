@@ -1,0 +1,493 @@
+@import "../styles";
+
+@font-face {
+    font-family: "Roboto-Regular";
+    src: url("/Fonts/RobotoMono-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal; 
+}
+
+as1000-mfd-element #Mainframe #Electricity  {
+    #NavBox { 
+        border-bottom:0.3vh solid white;
+
+        #Center {
+            border-left: $border_width_thin solid;
+            border-right: $border_width_thin solid; 
+            
+            #top {
+                border-bottom: $border_width_thin solid;
+                padding-left:1vh;
+                padding-right:1vh;
+                align-items: baseline;
+                height:60%;
+
+                div {
+                    width: auto;
+                    margin:0 1vh;
+                    flex:none;
+                    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale)); 
+
+                    &#GroundSpeed, &#DesiredTrack, &#CurrentTrack, &#ETE {
+                        color: $color_gps; 
+                        flex:1;
+                        font-size: calc( 3.0* 1vh * var(--bodyHeightScale)); 
+                    }
+                }
+            }
+
+            #bottom {
+                height:40%;
+                font-size: calc( 2.0 * 1vh * var(--bodyHeightScale));
+            }
+        }
+
+        #Left {
+            #Nav1, #Nav2 {
+                align-items: baseline;
+                font-size: calc( 2.5* 1vh * var(--bodyHeightScale)); 
+                font-family: "Roboto-Bold";
+
+                div:first-child {
+                    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale));
+                }
+            }
+        }
+
+        #Right {
+            #Com1, #Com2 {
+                align-items: baseline;
+                font-size: calc( 2.5* 1vh * var(--bodyHeightScale)); 
+                font-family: "Roboto-Bold";
+
+                div:last-child {
+                    font-size: calc( 2.0 * 1vh * var(--bodyHeightScale));
+                }
+            }
+        }
+
+        .Selectable {
+            border:$border_width_thin solid transparent;
+        
+            &[state="selected"] {
+                border:$border_width_thin solid cyan;
+                background:none;
+                color: #fff; 
+            }
+        }
+    }
+
+    #SoftKeys {
+        background-color: #333;
+   
+        .SoftKey {
+            border-right:$border_width_thin solid #000;
+            border-left:$border_width_thin solid #ddd;
+            border-top:$border_width_thick solid #fff;
+
+            &[state=White] {
+                color: #1a1d21;
+                background-color: #b0bacd; 
+        
+                border-right-color:transparent;
+                border-left-color:rgba(0,0,0,0.6);
+            }
+        }
+    }
+
+    #CenterDisplay #MainDisplayArea {
+        #LeftInfos {
+            border-right:$border_width_thick solid white;
+        }
+
+        #RightInfos {
+            #AirportInfos {
+                #Infos1 {
+                    #rightPanel {
+                        border-left:$border_width_thick solid white;
+                        font-size: calc( 2 * 1vh * var(--bodyHeightScale));
+
+                        .top {
+                            display:flex;
+                            align-items: flex-end;
+                            color:#fff;
+                            border-bottom:1px solid $category_box_outline_color;
+                            padding:0;
+                            margin:0 2vh;
+                            width:auto;
+                            line-height:2.0em;
+
+                            &:before,
+                            &:after {
+                                content:" ";
+                                display:block;
+                                height:10px; 
+                                background:$category_box_background_color;
+                                border-top:1px solid $category_box_outline_color;
+                                position:relative;
+                                top:1px;
+                                border-right:1px solid $category_box_outline_color;
+                                border-left:1px solid $category_box_outline_color;
+                            }
+
+                            &:before {
+                                margin-right:10px;
+                                width:3vh;
+                            }
+                            &:after {
+                                margin-left:10px;
+                                flex:1;
+                            }
+                        }
+
+                        .bottom {
+                            text-align: left;
+                            background-color: $category_box_background_color; 
+                            margin:0 2vh;
+                            border:1.5px solid $category_box_outline_color;
+                            border-top:none;
+                            padding:1vh;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.page-container, .pane-container {
+    text-transform: uppercase;
+
+    .category {
+        font-size:1.0em;
+        margin:1.5vh 0;
+        
+        h1 {
+            display:flex;
+            align-items: flex-end;
+            color:#fff;
+            border-bottom:1px solid $category_box_outline_color;
+            padding:0;
+            width:auto;
+            line-height:1.5em;
+            font-size:1.0em;
+
+            &:before,
+            &:after {
+                content:" ";
+                display:block;
+                height:10px; 
+                background:$category_box_background_color;
+                border-top:1px solid $category_box_outline_color;
+                position:relative;
+                top:1px;
+                border-right:1px solid $category_box_outline_color;
+                border-left:1px solid $category_box_outline_color;
+            }
+
+            &:before {
+                margin-right:1vh;
+                width:2vh;
+            }
+            &:after {
+                margin-left:1vh;
+                flex:1;
+            }
+        }
+
+        .content {
+            text-align: left;
+            background-color: $category_box_background_color; 
+            border:1.5px solid $category_box_outline_color;
+            border-top:none;
+            padding:1vh;
+            line-height:1.8em;
+        }
+
+        .element {
+            display:flex;
+
+            .name {
+               flex:1; 
+               font-size: calc( 2.0 * 1vh * var(--bodyHeightScale));
+            }
+
+            .value {
+                text-align: right;
+                font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+            }
+
+            &.highlighted {
+                color: $input_color;
+            }
+        }
+    }
+}
+
+.pane-container {
+    position: absolute;
+    height: 100%;
+    width: 33%;
+    right:0;
+    background:#404040;;
+    border:1vh outset #111;
+    outline:$border_width_thin solid #fff;
+    z-index:1000;
+
+    .title {
+        margin:1.0vh 0;
+        font-size: calc( 2.5 * 1vh * var(--bodyHeightScale));
+    }
+
+    &:empty {
+        display:none;
+    }
+
+    > * {
+        display:none;
+
+        &:last-child {
+            display:block;
+        }
+    }
+}
+
+g1000-aux-settings {
+    display:grid;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background:$page_background_color;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap:2.0vh;
+    padding:0 2.0vh;
+}
+
+g1000-approach-page {
+    display:grid;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background:$page_background_color;
+    grid-gap:2.0vh;
+    padding:0 2.0vh;
+}
+
+g1000-approach-page {
+    grid-template-columns: 2fr 1fr;
+}
+
+g1000-flight-plan-page {
+    display:grid;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 3fr 1fr 1fr;
+
+    grid-template-areas: 
+        "map flightplan"
+        "map vnav"
+        "map weather";
+
+    .map-container {
+        grid-area:map;
+    }
+
+    .flight-plan-container {
+        grid-area:flightplan;
+        background:$page_background_color;
+        border-left:$border_width_thin solid #fff;
+    }
+
+    .vnav-profile-container {
+        grid-area:vnav;
+        background:$page_background_color;
+        border-left:$border_width_thin solid #fff;
+    }
+
+    .selected-waypoint-weather-container {
+        grid-area:weather;
+        background:$page_background_color;
+        border-left:$border_width_thin solid #fff;
+    }
+
+    .flight-plan-header {
+        border-bottom:$border_width_thin solid #fff;
+    }
+
+    .flight-plan-header-labels {
+        display:grid;
+        grid-template-columns: 3fr 1fr 1fr 1fr;
+
+        .wide-only {
+            display: none;
+        }
+    }
+
+    $row_height: 4vh;
+
+    .flight-plan-waypoints {
+        display:grid;
+        grid-template-columns: $row_height 1fr;
+        grid-auto-rows:$row_height;
+        align-items: center;
+        overflow:scroll;
+        line-height: 1.0em;
+    }
+
+    .flight-plan-header-line {
+        grid-column-start:2;
+        height:auto;
+    }
+
+    .flight-plan-waypoint {
+        grid-column-start:2;
+        display:grid;
+        grid-template-columns: 2vh 3fr 1fr 1fr 1fr;
+        color:$input_color;
+        height:auto;
+    }
+
+    .units-small {
+        font-size:0.8em;
+    }
+
+    .flight-plan-marker {
+        grid-column:1/1;
+        display:grid;
+        grid-template-rows:$row_height 1fr $row_height;
+        height:100%;
+
+        svg {
+            stroke:$color_gps;
+        }
+    }
+}
+
+g1000-procedures-pane {
+    display: block;
+    padding:0 1.5vh;
+}
+
+selectable-button {
+    display: block;
+    color: $input_color;
+
+    &[disabled] {
+        color:#666;
+    }
+
+    &[state=Selected] {
+        animation:SelectionBlink 0.5s infinite !important;
+    }
+}
+
+drop-down-selector {
+    position:relative;
+    display: block;
+
+    .popup {
+        display:none;
+        position: absolute;
+        right:0;
+        top:100%;
+        width:10em;
+        background:$page_background_color;
+        border:1vh outset #111;
+        outline:$border_width_thin solid #fff;
+        z-index:1000;
+
+        drop-down-selector-option {
+            color: $input_color;
+            display: block;
+            
+            &[state=Selected] {
+                animation:SelectionBlink 0.5s infinite !important;
+            }
+        }
+    }
+
+    .value {
+        color: $input_color;
+    }
+
+    &[ACTIVE] {
+        .popup {
+            display:block;
+        }
+    }
+
+    &[state=Selected] {
+        .value {
+            animation:SelectionBlink 0.5s infinite !important;
+        }
+    }
+}
+
+numeric-input {
+    color: $input_color;
+
+    &[state=Selected] {
+        animation:SelectionBlink 0.5s infinite !important;
+    }
+
+    .digit {
+        &[state=Selected] {
+            animation:SelectionBlink 0.5s infinite !important;
+        }
+    }
+}
+
+toggle-switch {
+    display: flex;
+    align-items: center;
+    color: $input_color;
+    padding:0.3vh 0;
+
+    $off_color: #666;
+    $on_color: #00ff00;
+    $size: 0.8vh;
+
+    div {
+        flex: 1;
+        margin: 0 0.8vh;
+        line-height:1.0;
+    }
+
+    &[state=Selected] {
+        div {
+            animation:SelectionBlink 0.5s infinite !important;
+        }
+    }
+
+    &:before, &:after {
+        border-top: $size solid transparent;
+        border-bottom: $size solid transparent;
+        width: 0;
+        height: 0;
+        content: " ";
+        display: block;
+    }
+
+    &:before {
+        border-right: $size solid $off_color;
+    }
+
+    &:after {
+        border-left: $size solid $off_color;
+    }
+
+    &[value="1"] {
+        &:before {
+            border-right-color: $on_color;
+        }
+    }
+
+    &:not([value="1"]) {
+        &:after {
+            border-left-color: $on_color;
+        }
+    }
+}

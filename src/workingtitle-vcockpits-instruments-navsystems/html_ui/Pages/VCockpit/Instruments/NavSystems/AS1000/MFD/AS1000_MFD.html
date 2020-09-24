@@ -1,4 +1,10 @@
-﻿<script type="text/html" id="AS1000_MFD">
+﻿<script>
+    Include.addScript("/JS/debug.js", function () {
+            g_modDebugMgr.AddConsole(null);
+    });
+</script>
+
+<script type="text/html" id="AS1000_MFD">
     <glasscockpit-highlight id="highlight"></glasscockpit-highlight>
     <div id="Mainframe">
         <div id="Electricity" state="off">
@@ -95,6 +101,9 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="page-container" id="PageContainer"></div>
+                        <div class="pane-container" id="PaneContainer"></div>
 
                         <div id="SystemSetup">
                             <div class="column">
@@ -923,10 +932,263 @@
             </div>
         </div>
     </div>
+
+    <template id="aux-settings">
+        <section>
+            <section class="category">
+                <h1>Date / Time</h1>
+                <div class="content">
+                    <div class="element" data-id="date">
+                        <div class="name">Date</div>
+                        <div class="value"></div>
+                    </div>
+                    <div class="element" data-id="time">
+                        <div class="name">Time</div>
+                        <div class="value"></div>
+                    </div>
+                    <div class="element" data-id="time-format">
+                        <div class="name">Time Format</div>
+                        <div class="value"></div>
+                    </div>
+                    <div class="element" data-id="time-offset">
+                        <div class="name">Time Offset</div>
+                        <div class="value"></div>
+                    </div>
+                </div>
+            </section>
+            <section class="category">
+                <h1>Display Units</h1>
+                <div class="content">
+                    <div class="element" data-id="nav-angle">
+                        <div class="name">Nav Angle</div>
+                        <div class="value"></div>
+                    </div>
+                    <div class="element" data-id="mag-var">
+                        <div class="name">Mag Var</div>
+                        <div class="value"></div>
+                    </div>
+                    <div class="element" data-id="dis-speed">
+                        <div class="name">Dis Speed</div>
+                        <drop-down-selector class="value" data-setting="dis_spd">
+                            <drop-down-selector-option value="metric">Metric <span style="font-size:0.8em;">(KM,KPH)</span></drop-down-selector-option>
+                            <drop-down-selector-option value="nautical">Nautical <span style="font-size:0.8em;">(NM,KT)</span></drop-down-selector-option>
+                        </drop-down-selector>
+                    </div>
+                    <div class="element" data-id="alt-vs">
+                        <div class="name">Alt. VS</div>
+                        <drop-down-selector class="value" data-setting="alt_vs">
+                            <drop-down-selector-option value="feet">Feet <span style="font-size:0.8em;">(FT,FPM)</span></drop-down-selector-option>
+                            <drop-down-selector-option value="metres">Metres <span style="font-size:0.8em;">(MT,MPM)</span></drop-down-selector-option>
+                        </drop-down-selector>
+                    </div>
+                    <div class="element" data-id="temp">
+                        <div class="name">Temp</div>
+                        <drop-down-selector class="value" data-setting="temp">
+                            <drop-down-selector-option value="celsius">Celsius <span style="font-size:0.8em;">(°C)</span></drop-down-selector-option>
+                            <drop-down-selector-option value="farenheit">Farenheit <span style="font-size:0.8em;">(°F)</span></drop-down-selector-option>
+                        </drop-down-selector>
+                    </div>
+                    <div class="element" data-id="fuel">
+                        <div class="name">Fuel</div>
+                        <drop-down-selector class="value" data-setting="fuel">
+                            <drop-down-selector-option value="gallons">Gallons <span style="font-size:0.8em;">(GL,GL/HR)</span></drop-down-selector-option>
+                        </drop-down-selector>
+                    </div>
+                    <div class="element" data-id="weight">
+                        <div class="name">Weight</div>
+                        <drop-down-selector class="value" data-setting="weight">
+                            <drop-down-selector-option value="kg">Kilograms (KG)</drop-down-selector-option>
+                            <drop-down-selector-option value="lb">Pounds (LB)</drop-down-selector-option>
+                        </drop-down-selector>
+                    </div>
+                    <div class="element" data-id="position">
+                        <div class="name">Position</div>
+                        <div class="value"></div>
+                    </div>
+                </div>
+            </section>
+            <section class="category">
+                <h1>Baro Transition Alert</h1>
+                <div class="content">
+                    <div class="element" data-id="baro-transition-alert">
+                        <toggle-switch class="value" value="1"></toggle-switch>
+                        <div class="name">Altitude</div>
+                        <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT"></numeric-input>
+                    </div>
+                </div>
+            </section>
+        </section>
+        <section>
+            <section class="category">
+                <h1>Airspace Alerts</h1>
+                <div class="content">
+                    <div class="element" data-id="altitude-buffer">
+                        <div class="name">Altitude Buffer</div>
+                        <div class="value"></div>
+                    </div>
+                    <div class="element" data-id="class-b-tma">
+                        <div class="name">Class B/TMA</div>
+                        <toggle-switch class="value" value="1"></toggle-switch>
+                    </div>
+                    <div class="element" data-id="class-c-tca">
+                        <div class="name">Class C/TCA</div>
+                        <toggle-switch class="value" value="1"></toggle-switch>
+                    </div>
+                    <div class="element" data-id="class-d">
+                        <div class="name">Class D</div>
+                        <toggle-switch class="value" value="1"></toggle-switch>
+                    </div>
+                    <div class="element" data-id="restricted">
+                        <div class="name">Restricted</div>
+                        <toggle-switch class="value" value="1"></toggle-switch>
+                    </div>
+                    <div class="element" data-id="moa-military">
+                        <div class="name">MOA (Military)</div>
+                        <toggle-switch class="value" value="1"></toggle-switch>
+                    </div>
+                    <div class="element" data-id="other-adiz">
+                        <div class="name">Other ADIZ</div>
+                        <toggle-switch class="value" value="1"></toggle-switch>
+                    </div>
+                </div>
+            </section>
+        </section>
+        <section>
+            <section class="category">
+                <h1>COM CONFIG</h1>
+                <div class="content">
+                    <div class="element">
+                        <div class="name">CHANNEL SPACING</div>
+                        <div id="Setup_ChannelConfig" class="value Selectable">25.0 kHz</div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </template>
+
+    <template id="procedures-pane">
+        <h1 class="title">Procedures</h1>
+        <div class="category">
+            <h1>Options</h1>
+            <section class="content">
+                <selectable-button disabled>ACTIVATE VECTOR-TO-FINAL</selectable-button>
+                <selectable-button disabled>ACTIVATE APPROACH</selectable-button>
+                <selectable-button disabled>ACTIVATE MISSED APPROACH</selectable-button>
+                <selectable-button data-click="selectApproach">SELECT APPROACH</selectable-button>
+                <selectable-button data-click="selectArrival">SELECT ARRIVAL</selectable-button>
+                <selectable-button data-click="selectDeparture">SELECT DEPARTURE</selectable-button>
+            </section>
+        </div>
+        <div class="category">
+            <h1>Loaded</h1>
+            <section class="content">
+                <div class="label">Approach:</div>
+                <div class="element" data-id="loadedApproach"></div>
+                <div class="label">Arrival:</div>
+                <div class="element" data-id="loadedArrival"></div>
+                <div class="label">Departure:</div>
+                <div class="element" data-id="loadedDeparture"></div>
+            </section>
+        </div>
+    </template>
+
+    <template id="approach-page">
+        <section class="map">
+            <bing-map></bing-map>
+            <svg data-id="waypointSvg"></svg>
+        </section>
+        <section class="sidebar">
+            <div class="category">
+                <h1>Airport</h1>
+                <airport-selector></airport-selector>
+            </div>
+            <div class="category">
+                <h1>Approach</h1>
+                <section class="content">
+                    <div class="element"><drop-down-selector data-id="approachSelector" updateOnSelection></drop-down-selector></div>
+                </section>
+            </div>
+            <div class="category">
+                <h1>Transition</h1>
+                <section class="content">
+                    <div class="element"><drop-down-selector data-id="transitionSelector" updateOnSelection></drop-down-selector></div>
+                </section>
+            </div>
+            <div class="category">
+                <h1>Minimums</h1>
+                <section class="content">
+                    <div class="element">
+                        <toggle-switch value="0" data-id="minimumsMode"></toggle-switch>
+                        <numeric-input digits="5" min="0" max="35000" class="value" value="0" units="FT"></numeric-input>
+                    </div>
+                </section>
+            </div>
+            <div class="category">
+                <h1>Primary Frequency</h1>
+                <section class="content">
+                    <div class="element">
+                        <div class="name" data-id="primaryFrequencyName"></div>
+                        <div class="value" data-id="primaryFrequencyHz"></div>
+                    </div>
+                </section>
+            </div>
+            <div class="category">
+                <h1>Sequence</h1>
+                <section class="content sequence" data-id="sequenceList"></section>
+            </div>
+        </section>
+    </template>
+
+    <template id="flight-plan-page">
+        <section class="map-container">
+        </section>
+        <section class="flight-plan-container">
+            <div class="category">
+                <h1>Flight Plan</h1>
+                <div class="content flight-plan">
+                    <div class="flight-plan-header">
+                        <div class="flight-plan-name"></div>
+                        <div class="flight-plan-header-labels">
+                            <div></div>
+                            <div data-label="DTK">DTK</div>
+                            <div data-label="DIS">DIS</div>
+                            <div data-label="ALT">ALT</div>
+                            <div data-label="Fuel Rem" class="wide-only">Fuel Rem</div>
+                            <div data-label="ETE" class="wide-only">ETE</div>
+                            <div data-label="ETA" class="wide-only">ETA</div>
+                            <div data-label="BRG" class="wide-only">BRG</div>
+                        </div>
+                    </div>
+                    <div class="flight-plan-waypoints scrollable-container" data-element="flightPlanWaypoints">
+                        <div class="flight-plan-marker" data-element="activeLegMarker">
+                            <svg viewBox="0 0 100 100">
+                                <path d="M100 50 L50 50 Q20 50 20 80 L20 100" stroke="magenta" stroke-width="20" fill="none"></path>
+                            </svg>
+                            <div style="overflow:hidden;">
+                                <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
+                                    <path d="M20 0 L20 100" stroke="magenta" stroke-width="20" fill="none"></path>
+                                </svg>
+                            </div>
+                            <svg viewBox="0 0 100 100">
+                                <path d="M20 0 L20 30 Q20 50 50 50 L60 50" stroke="magenta" stroke-width="20" fill="none"></path>
+                                <path d="M60 20 L60 80 L100 50 Z" fill="magenta"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="vnav-profile-container">
+        </section>
+        <section class="selected-waypoint-weather-container">
+        </section>
+    </template>
 </script>
 
 <link rel="stylesheet" href="AS1000_MFD.css" />
 <link rel="stylesheet" href="AS1000_MFD_WT.css" />
+
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/DOMUtilities.js"></script>
 
 <script type="text/html" import-script="/JS/SimPlane.js"></script>
 
@@ -965,4 +1227,15 @@
 
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/BaseAS1000.js"></script>
 
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/InputStack.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/DropDownSelector.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/NumericInput.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/Shared/UIElements/ToggleSwitch.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/FlightPlan/FlightPlan.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Auxilliary/Settings.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Pages/Procedures/Approach.js"></script>
+<script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/Panes/Procedures.js"></script>
+
 <script type="text/html" import-script="/Pages/VCockpit/Instruments/NavSystems/AS1000/MFD/AS1000_MFD.js"></script>
+
+<script type="text/html" import-script="/JS/dataStorage.js"></script>

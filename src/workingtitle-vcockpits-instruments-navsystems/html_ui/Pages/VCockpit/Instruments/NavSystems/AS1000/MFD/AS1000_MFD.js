@@ -8,11 +8,15 @@ class AS1000_MFD extends BaseAS1000 {
     get templateID() { return "AS1000_MFD"; }
     connectedCallback() {
         super.connectedCallback();
-        Include.addScript("/JS/debug.js", function () {
-            g_modDebugMgr.AddConsole(null);
-        });
+        
+        this.settings = new AS1000_Settings("g36", AS1000_Default_Settings.base);
+        this.procedures = new Procedures(this.currFlightPlanManager);
+        this.inputStack = new Input_Stack(this);
+        this.inputStack.push(new Base_Input_Layer(this));
         this.trackup = false;
         this.pagesContainer = this.getChildById("RightInfos");
+        this.pageContainer = this.getChildById("PageContainer");
+        this.paneContainer = this.getChildById("PaneContainer");
         this.engineDisplay = new Engine("Engine", "LeftInfos");
         this.addIndependentElementContainer(this.engineDisplay);
         this.pageGroups = [
@@ -24,6 +28,7 @@ class AS1000_MFD extends BaseAS1000 {
             ]),
             new NavSystemPageGroup("AUX", this, [
                 new AS1000_MFD_SystemSetup(),
+                new AS1000_MFD_Page("System Settings", new AS1000_MFD_SystemSettings(this.pageContainer, this.inputStack)),
             ]),
             new NavSystemPageGroup("NRST", this, [
                 new AS1000_MFD_NearestAirport(),
@@ -40,6 +45,12 @@ class AS1000_MFD extends BaseAS1000 {
         this.addIndependentElementContainer(new NavSystemElementContainer("Page Navigation", "CenterDisplay", new AS1000_MFD_PageNavigation()));
         this.addIndependentElementContainer(new NavSystemElementContainer("Navigation status", "CenterDisplay", new AS1000_MFD_NavStatus()));
         this.addIndependentElementContainer(new NavSystemElementContainer("FloatingMap", "CenterDisplay", this.mapElement));
+    }
+    showApproaches() {
+        let element = document.createElement("g1000-approach-page");
+        this.pageContainer.appendChild(element);
+        element.enter(this, this.inputStack);
+        element.setICAO("EGLL");
     }
     parseXMLConfig() {
         super.parseXMLConfig();
@@ -60,7 +71,34 @@ class AS1000_MFD extends BaseAS1000 {
             ]);
         } 
     }
+    onUpdate(_deltaTime) {
+        this.settings.update();
+        this.procedures.update();
+    }
     disconnectedCallback() {
+    }
+    computeEvent(_event) {
+        this.inputStack.processEvent(_event);
+    }
+    computeEvent2(_event) {
+        switch(_event) {
+            case "PROC_Push": {
+                let element = document.createElement("g1000-procedures-pane");
+                console.log(element.tagName);
+                this.paneContainer.appendChild(element);
+                element.setProcedures(this.procedures);
+                element.enter(this, this.inputStack);
+                return;
+            }
+            case "FPL_Push": {
+                let element = document.createElement("g1000-flight-plan-page");
+                this.pageContainer.appendChild(element);
+                element.setGps(this);
+                element.setProcedures(this.procedures);
+                return;
+            }
+        }
+        super.computeEvent(_event);
     }
     onEvent(_event) {
         super.onEvent(_event);
@@ -552,95 +590,101 @@ class AS1000_MFD_AirportInfos1 extends NavSystemElement {
             if (this.gps.currentInteractionState == 3) {
                 this.selectedRunway = 0;
             }
-            this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
-            this.runwaySizeElement.textContent = Math.round(infos.runways[this.selectedRunway].length * 3.28084) + "FT x " + Math.round(infos.runways[this.selectedRunway].width * 3.28084) + "FT";
-            switch (infos.runways[this.selectedRunway].surface) {
-                case 0:
-                    this.runwaySurfaceTypeElement.textContent = "Unknown";
-                    break;
-                case 1:
-                    this.runwaySurfaceTypeElement.textContent = "Concrete";
-                    break;
-                case 2:
-                    this.runwaySurfaceTypeElement.textContent = "Asphalt";
-                    break;
-                case 101:
-                    this.runwaySurfaceTypeElement.textContent = "Grass";
-                    break;
-                case 102:
-                    this.runwaySurfaceTypeElement.textContent = "Turf";
-                    break;
-                case 103:
-                    this.runwaySurfaceTypeElement.textContent = "Dirt";
-                    break;
-                case 104:
-                    this.runwaySurfaceTypeElement.textContent = "Coral";
-                    break;
-                case 105:
-                    this.runwaySurfaceTypeElement.textContent = "Gravel";
-                    break;
-                case 106:
-                    this.runwaySurfaceTypeElement.textContent = "Oil Treated";
-                    break;
-                case 107:
-                    this.runwaySurfaceTypeElement.textContent = "Steel";
-                    break;
-                case 108:
-                    this.runwaySurfaceTypeElement.textContent = "Bituminus";
-                    break;
-                case 109:
-                    this.runwaySurfaceTypeElement.textContent = "Brick";
-                    break;
-                case 110:
-                    this.runwaySurfaceTypeElement.textContent = "Macadam";
-                    break;
-                case 111:
-                    this.runwaySurfaceTypeElement.textContent = "Planks";
-                    break;
-                case 112:
-                    this.runwaySurfaceTypeElement.textContent = "Sand";
-                    break;
-                case 113:
-                    this.runwaySurfaceTypeElement.textContent = "Shale";
-                    break;
-                case 114:
-                    this.runwaySurfaceTypeElement.textContent = "Tarmac";
-                    break;
-                case 115:
-                    this.runwaySurfaceTypeElement.textContent = "Snow";
-                    break;
-                case 116:
-                    this.runwaySurfaceTypeElement.textContent = "Ice";
-                    break;
-                case 201:
-                    this.runwaySurfaceTypeElement.textContent = "Water";
-                    break;
-                default:
-                    this.runwaySurfaceTypeElement.textContent = "Unknown";
-            }
-            switch (infos.runways[this.selectedRunway].lighting) {
-                case 0:
-                    this.runwayLightsElement.textContent = "Unknown";
-                    break;
-                case 1:
-                    this.runwayLightsElement.textContent = "None";
-                    break;
-                case 2:
-                    this.runwayLightsElement.textContent = "Part Time";
-                    break;
-                case 3:
-                    this.runwayLightsElement.textContent = "Full Time";
-                    break;
-                case 4:
-                    this.runwayLightsElement.textContent = "Frequency";
-                    break;
+            if (infos.runways) {
+                this.runwayNameElement.textContent = infos.runways[this.selectedRunway].designation;
+                this.runwaySizeElement.textContent = Math.round(infos.runways[this.selectedRunway].length * 3.28084) + "FT x " + Math.round(infos.runways[this.selectedRunway].width * 3.28084) + "FT";
+                switch (infos.runways[this.selectedRunway].surface) {
+                    case 0:
+                        this.runwaySurfaceTypeElement.textContent = "Unknown";
+                        break;
+                    case 1:
+                        this.runwaySurfaceTypeElement.textContent = "Concrete";
+                        break;
+                    case 2:
+                        this.runwaySurfaceTypeElement.textContent = "Asphalt";
+                        break;
+                    case 101:
+                        this.runwaySurfaceTypeElement.textContent = "Grass";
+                        break;
+                    case 102:
+                        this.runwaySurfaceTypeElement.textContent = "Turf";
+                        break;
+                    case 103:
+                        this.runwaySurfaceTypeElement.textContent = "Dirt";
+                        break;
+                    case 104:
+                        this.runwaySurfaceTypeElement.textContent = "Coral";
+                        break;
+                    case 105:
+                        this.runwaySurfaceTypeElement.textContent = "Gravel";
+                        break;
+                    case 106:
+                        this.runwaySurfaceTypeElement.textContent = "Oil Treated";
+                        break;
+                    case 107:
+                        this.runwaySurfaceTypeElement.textContent = "Steel";
+                        break;
+                    case 108:
+                        this.runwaySurfaceTypeElement.textContent = "Bituminus";
+                        break;
+                    case 109:
+                        this.runwaySurfaceTypeElement.textContent = "Brick";
+                        break;
+                    case 110:
+                        this.runwaySurfaceTypeElement.textContent = "Macadam";
+                        break;
+                    case 111:
+                        this.runwaySurfaceTypeElement.textContent = "Planks";
+                        break;
+                    case 112:
+                        this.runwaySurfaceTypeElement.textContent = "Sand";
+                        break;
+                    case 113:
+                        this.runwaySurfaceTypeElement.textContent = "Shale";
+                        break;
+                    case 114:
+                        this.runwaySurfaceTypeElement.textContent = "Tarmac";
+                        break;
+                    case 115:
+                        this.runwaySurfaceTypeElement.textContent = "Snow";
+                        break;
+                    case 116:
+                        this.runwaySurfaceTypeElement.textContent = "Ice";
+                        break;
+                    case 201:
+                        this.runwaySurfaceTypeElement.textContent = "Water";
+                        break;
+                    default:
+                        this.runwaySurfaceTypeElement.textContent = "Unknown";
+                }
+                switch (infos.runways[this.selectedRunway].lighting) {
+                    case 0:
+                        this.runwayLightsElement.textContent = "Unknown";
+                        break;
+                    case 1:
+                        this.runwayLightsElement.textContent = "None";
+                        break;
+                    case 2:
+                        this.runwayLightsElement.textContent = "Part Time";
+                        break;
+                    case 3:
+                        this.runwayLightsElement.textContent = "Full Time";
+                        break;
+                    case 4:
+                        this.runwayLightsElement.textContent = "Frequency";
+                        break;
+                }
             }
             var frequencies = [];
-            for (let i = 0; i < infos.frequencies.length; i++) {
-                frequencies.push('<div class="Freq"><div class="Name">' + infos.frequencies[i].name + '</div><div class="Value Blinking">' + infos.frequencies[i].mhValue.toFixed(3) + '</div></div>');
+            if (infos.frequencies) {
+                for (let i = 0; i < infos.frequencies.length; i++) {
+                    frequencies.push('<div class="Freq"><div class="Name">' + infos.frequencies[i].name + '</div><div class="Value Blinking">' + infos.frequencies[i].mhValue.toFixed(3) + '</div></div>');
+                }
             }
             this.frequenciesSelectionGroup.setStringElements(frequencies);
-            this.mapElement.setCenter(infos.coordinates);
+            if (infos.coordinates) {
+                this.mapElement.setCenter(infos.coordinates);
+            }
         }
         else {
             this.symbolElement.textContent = "";

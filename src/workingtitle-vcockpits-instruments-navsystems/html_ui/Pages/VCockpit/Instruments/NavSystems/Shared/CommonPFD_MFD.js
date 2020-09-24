@@ -527,11 +527,13 @@ class PFD_NavStatus extends NavSystemElement {
                 }
             }
 
-            var rawCurrentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", "nautical miles"), 1);
+            let distanceUnits = this.gps.settings.getValue("dis_spd");
+
+            var rawCurrentLegDistance = fastToFixed(SimVar.GetSimVarValue("GPS WP DISTANCE", distanceUnits == "nautical" ? "nautical miles" : "kilometers"), 1);
             if (rawCurrentLegDistance.indexOf(".") == -1) {
                 rawCurrentLegDistance = rawCurrentLegDistance + ".0"
             }
-            var currentLegDistance = rawCurrentLegDistance + "NM";
+            var currentLegDistance = rawCurrentLegDistance + ( distanceUnits == "nautical" ? "NM" : "KM" );
             if (this.currentLegDistanceValue != currentLegDistance) {
                 if (this.currentLegDistance)
                     this.currentLegDistance.textContent = currentLegDistance;

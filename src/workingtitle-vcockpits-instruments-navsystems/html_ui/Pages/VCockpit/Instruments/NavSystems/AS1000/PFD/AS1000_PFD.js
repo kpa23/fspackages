@@ -10,6 +10,7 @@ class AS1000_PFD extends BaseAS1000 {
         Include.addScript("/JS/debug.js", function () {
             g_modDebugMgr.AddConsole(null);
         });
+        this.settings = new AS1000_Settings("g36", AS1000_Default_Settings.base);
         this.mainPage = new AS1000_PFD_MainPage();
         this.pageGroups = [
             new NavSystemPageGroup("Main", this, [
@@ -37,6 +38,7 @@ class AS1000_PFD extends BaseAS1000 {
         let avionicsKnobValue = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number");
     }
     onUpdate(_deltaTime) {
+        this.settings.update();
         let avionicsKnobValueNow = SimVar.GetSimVarValue("A:LIGHT POTENTIOMETER:" + this.avionicsKnobIndex, "number") * 100;
         if (avionicsKnobValueNow != this.avionicsKnobValue) {
             SimVar.SetSimVarValue("L:XMLVAR_AS1000_PFD_Brightness", "number", avionicsKnobValueNow);
